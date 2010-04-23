@@ -1,0 +1,9 @@
+This software is developed in the context of the Virage platform.
+
+Virage Platform is a partnership between: BEK, Blue Yeti, CICM, CopperLan, didascalie.net, ENSATT, GMEA and GMEM - Centres Nationaux de Creation Musicale d'Albi-Tarn et de Marseille, iMAL, ISTS, LaBRI, LIMSI, RSF, Stantum.
+More information on www.plateforme-virage.org
+
+
+ Author(s):
+Laurent Garnier (BlueYeti/LaBRI) : lo.garnier@yahoo.fr
+Théo Delahogue  (GMEA)		 : theod@gmea.net
