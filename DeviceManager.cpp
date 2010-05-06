@@ -50,7 +50,7 @@
 #include "DeviceManager.h"
 #include "Device.h"
 #include "PluginFactories.h"
-#include "Plugin.h"
+#include "Plugins/Plugin.h"
 
 #include <iostream>
 #include <algorithm>
@@ -92,9 +92,10 @@ void
 DeviceManager::pluginLoad(std::string path)
 {	
 	factories->loadPlugins(path);
-	
+
 	//create an instance of each plugin available
 	IteratorPluginNames it = factories->getPluginNames();
+	
 	while (it.hasNext()) {
 		std::string pname = it.next();
 		//std::cout << pname << std::endl;
@@ -108,7 +109,7 @@ DeviceManager::pluginLoad(std::string path)
 	std::map<std::string, Plugin*>::iterator itr = netPlugins->begin();
 	while (itr != netPlugins->end()) {		
 		if (itr->first.compare("CopperLAN") != 0) {
-			itr->second->commDefineParameters();		
+			itr->second->commDefineParameters();	
 			itr->second->commRunReceivingThread();
 		}
 		
@@ -463,7 +464,7 @@ DeviceManager::deviceSendListenRequest(std::string deviceAndAddress, std::string
 	std::cout << "DeviceManager::deviceSendListenRequest deviceName = " << deviceName << " address = " << address << std::endl;
 	
 	// send the request
-	deviceSendListenRequest(deviceName, address, enable);
+	deviceSendListenRequest(deviceName, address, attribute, enable);
 }
 
 void 
@@ -768,7 +769,7 @@ DeviceManager::snapshotProcess(Plugin *plugin, Device *device, Address address)
 /*********************************************************************
  TEMPORARY METHOD TO ALLOW THE TPITOUCH TO SPEAK WITH THE CONTROLLER
  *********************************************************************/
-
+/*
 void
 DeviceManager::addTriggerPointLeave(unsigned int triggerId, std::string triggerMessage)
 {
@@ -886,6 +887,6 @@ DeviceManager::askDeviceManagerValueFor(std::string address, std::string attribu
 		return "ERROR";
 	}
 }
-
+*/
 
 

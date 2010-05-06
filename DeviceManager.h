@@ -439,14 +439,14 @@ private:
 	/*********************************************************************
 	 TEMPORARY METHOD TO ALLOW THE TPITOUCH TO SPEAK WITH THE CONTROLLER
 	 *********************************************************************/
-public:
-	void addTriggerPointLeave(unsigned int triggerId, std::string triggerMessage);
-	void removeTriggerPointLeave(unsigned int triggerId);
-	void setNamespaceValue(std::string address, int value, std::map<std::string, std::string> optionalArguments);
-	void resetTriggerPointStates();
-	
-	void askDeviceManagerNamespaceFor(std::string address, std::vector<std::string>* namespaceVectorToFill);
-	std::string askDeviceManagerValueFor(std::string address, std::string attribute);
+//public:
+//	void addTriggerPointLeave(unsigned int triggerId, std::string triggerMessage);
+//	void removeTriggerPointLeave(unsigned int triggerId);
+//	void setNamespaceValue(std::string address, int value, std::map<std::string, std::string> optionalArguments);
+//	void resetTriggerPointStates();
+//	
+//	void askDeviceManagerNamespaceFor(std::string address, std::vector<std::string>* namespaceVectorToFill);
+//	std::string askDeviceManagerValueFor(std::string address, std::string attribute);
 
 };
 

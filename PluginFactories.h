@@ -49,7 +49,7 @@
 
 #include <map>
 #include <string>
-#include "Plugin.h"
+#include "Plugins/Plugin.h"
 
 /*!
  * \class IteratorPluginNames

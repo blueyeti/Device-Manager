@@ -1,20 +1,37 @@
-GCC = g++
+#give your OS here, WIN32, MAC, or LINUX
+OS = WIN32
+
+ifeq ($(OS), WIN32)
+	GCC = cl.exe /c /EHsc /D_WIN32
+else
+	GCC = g++ -c -Wall
+endif
+
 
 all: libDeviceManager
 
-libDeviceManager: PluginFactories.o Device.o DeviceManager.o
+libDeviceManager: PluginFactories.obj Device.obj DeviceManager.obj
+ifeq ($(OS), WIN32) 
+	lib.exe /out:DeviceManager.lib PluginFactories.obj Device.obj DeviceManager.obj
+	del *~ *.obj
+else 
 	ar -cr libDeviceManager.a PluginFactories.o Device.o DeviceManager.o
-	rm -f *~ *.o *.dylib 
+	rm -f *~ *.o
+endif
 
-PluginFactories.o: PluginFactories.cpp PluginFactories.h 
-	$(GCC) -fPIC  -c PluginFactories.cpp 
+PluginFactories.obj: PluginFactories.cpp PluginFactories.h 
+	$(GCC) PluginFactories.cpp 
 
-Device.o: Device.cpp Device.h
-	$(GCC) -c Device.cpp 
+Device.obj: Device.cpp Device.h
+	$(GCC) Device.cpp 
 
-DeviceManager.o: DeviceManager.cpp DeviceManager.h
-	$(GCC) -c DeviceManager.cpp 	
+DeviceManager.obj: DeviceManager.cpp DeviceManager.h
+	$(GCC) DeviceManager.cpp 	
 
 
 clean:
+ifeq ($(OS), WIN32) 
+	del *~ *.obj DeviceManager.lib
+else
 	rm -f *~ *.o libDeviceManager.a
+endif
