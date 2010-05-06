@@ -1,0 +1,10 @@
+cd Minuit
+del *.obj
+cd ../NetworkCommunication/ip
+del *.obj
+cd ../osc
+del *.obj
+cd ../..
+del *.dll
+del *.lib
+del *.exp
