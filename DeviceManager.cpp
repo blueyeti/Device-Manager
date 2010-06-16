@@ -51,11 +51,14 @@
 #include "Device.h"
 #include "PluginFactories.h"
 #include "Plugins/Plugin.h"
+#include "xmlParser.h"
+#include "Namespace.h"
 
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
+
 
 DeviceManager::DeviceManager(std::string aName)
 {
@@ -65,9 +68,6 @@ DeviceManager::DeviceManager(std::string aName)
 	factories = new PluginFactories();
 	netDevices = new std::map<std::string, Device*>;
 	netPlugins = new std::map<std::string, Plugin*>;
-	
-	m_namespace = new std::map<unsigned int, std::string>;
-	m_values = new std::map<unsigned int, unsigned int>;
 }
 
 DeviceManager::~DeviceManager()
@@ -78,8 +78,6 @@ DeviceManager::~DeviceManager()
 	delete netDevices;
 	delete netPlugins;
 	delete factories;
-	delete m_namespace;
-	delete m_values;
 }
 
 /************************************************
@@ -103,18 +101,68 @@ DeviceManager::pluginLoad(std::string path)
 		if (p != 0) {
 			netPlugins->insert((std::pair<std::string, Plugin*>(pname, p)));
 		}
-	}
-	
-	//define parameters and run a reception thread for each plugin available
+	}	
+
+	//define parameters for each plugin available
 	std::map<std::string, Plugin*>::iterator itr = netPlugins->begin();
 	while (itr != netPlugins->end()) {		
-		if (itr->first.compare("CopperLAN") != 0) {
-			itr->second->commDefineParameters();	
-			itr->second->commRunReceivingThread();
-		}
-		
+		itr->second->commDefineParameters();	
 		itr++;
-	}	
+	}
+}
+
+void 
+DeviceManager::pluginLoadConfigXml(std::string filename)
+{
+	XMLNode xMainNode = XMLNode::openFileHelper(filename.c_str(), "deviceManager");
+	XMLNode xNode = xMainNode.getChildNode("receiveDevices");
+	int nChild = xNode.nChildNode();
+	
+	for (int i = 0; i < nChild; i++) {
+		XMLNode deviceNode = xNode.getChildNode(i);
+		int nAttr = deviceNode.nAttribute();
+
+		for (int j = 0; j < nAttr; j++) {
+			pluginSetCommParameter(deviceNode.getName(), deviceNode.getAttributeName(j), deviceNode.getAttributeValue(j));
+		}
+	}
+}
+
+void 
+DeviceManager::pluginSetCommParameter(std::string pluginName, std::string parameterName, std::string parameterValue)
+{
+	std::map<std::string, Plugin*>::iterator it  = netPlugins->find(pluginName);
+
+	if (it != netPlugins->end()) {
+		it->second->commSetParameter(parameterName, parameterValue);
+	} else {
+		std::cout << "DeviceManager::pluginSetCommParameter No Plugin named : " << pluginName << std::endl;
+	}
+}
+
+std::string
+DeviceManager::pluginGetCommParameter(std::string pluginName, std::string parameterName)
+{	
+	std::map<std::string, Plugin*>::iterator it  = netPlugins->find(pluginName);
+	
+	if (it != netPlugins->end()) {
+		return it->second->commGetParameter(parameterName);
+	} else {
+		std::cout << "DeviceManager::pluginGetCommParameter No Plugin named : " << pluginName << std::endl;
+		return "ERROR";
+	}
+}
+
+void 
+DeviceManager::pluginLaunch()
+{
+	//run a reception thread for each plugin available
+	std::map<std::string, Plugin*>::iterator itr = netPlugins->begin();
+	while (itr != netPlugins->end()) {		
+		itr->second->commRunReceivingThread();
+
+		itr++;
+	}
 }
 
 std::vector<std::string>
@@ -131,19 +179,6 @@ DeviceManager::pluginGetLoadedByName()
 	}
 	
 	return result;
-}
-
-std::string
-DeviceManager::pluginGetCommParameter(std::string pluginName, std::string parameterName)
-{	
-	std::map<std::string, Plugin*>::iterator it  = netPlugins->find(pluginName);
-	
-	if (it != netPlugins->end()) {
-		return it->second->commGetParameter(parameterName);
-	} else {
-		std::cout << "DeviceManager::pluginGetCommParameter No Plugin named : " << pluginName << std::endl;
-		return "ERROR";
-	}
 }
 
 bool
@@ -171,9 +206,29 @@ DeviceManager::pluginIsLoaded(std::string pluginName)
  ************************************************/
 
 void 
+DeviceManager::deviceLoadConfigXml(std::string filename)
+{
+	XMLNode xMainNode = XMLNode::openFileHelper(filename.c_str(), "deviceManager");
+	XMLNode xNode = xMainNode.getChildNode("sendDevices");
+	int nChild = xNode.nChildNode();
+	std::map<std::string, std::string> deviceParameters;
+
+	for (int i = 0; i < nChild; i++) {
+		XMLNode deviceNode = xNode.getChildNode(i);
+		int nAttr = deviceNode.nAttribute();
+
+		for (int j = 1; j < nAttr; j++) {
+			deviceParameters[deviceNode.getAttributeName(j)] = deviceNode.getAttributeValue(j);
+		}
+
+		deviceAdd(deviceNode.getAttributeValue(0), deviceNode.getName(), &deviceParameters);
+		deviceParameters.clear();
+	}
+}
+
+void 
 DeviceManager::deviceSetCurrent()
 {
-	
 	//scan the network using each plugin available (by broadcast for osc, by scan for CopperLan?) to find the devices
 	std::map<std::string, Plugin*>::iterator itr = netPlugins->begin();
 	while( itr != netPlugins->end()){
@@ -569,6 +624,20 @@ DeviceManager::deviceIsVisible(std::string deviceName)
  note : each method of this set is prepend by 'namespace'
  *********************************************************/
 
+void 
+DeviceManager::namespaceInit()
+{
+	m_namespace = new Namespace();
+	m_namespace->namespaceInit(m_application_name);
+	m_namespace->namespaceRelease();
+}
+
+void 
+DeviceManager::namespaceLoadXml(std::string filename)
+{
+	m_namespace->namespaceLoadFromXml(filename);
+}
+
 std::string
 DeviceManager::namespaceApplicationName()
 {
@@ -761,132 +830,5 @@ DeviceManager::snapshotProcess(Plugin *plugin, Device *device, Address address)
 	
 	return snapshot;
 }
-
-
-
-
-
-/*********************************************************************
- TEMPORARY METHOD TO ALLOW THE TPITOUCH TO SPEAK WITH THE CONTROLLER
- *********************************************************************/
-/*
-void
-DeviceManager::addTriggerPointLeave(unsigned int triggerId, std::string triggerMessage)
-{
-	std::map<unsigned int, std::string>::iterator it = m_namespace->find(triggerId);
-	
-	if (it != m_namespace->end()) {
-		it->second = triggerMessage;
-	} else {
-		m_namespace->insert((std::pair<unsigned int, std::string>(triggerId, triggerMessage)));
-		m_values->insert((std::pair<unsigned int, unsigned int>(triggerId, TRIGGER_READY)));
-	}
-	//cout << "trigger added in controller : " << triggerId << " " << triggerMessage << endl;
-}
-
-void
-DeviceManager::removeTriggerPointLeave(unsigned int triggerId)
-{
-	std::map<unsigned int, std::string>::iterator it = m_namespace->find(triggerId);
-	
-	if (it != m_namespace->end()) {
-		m_namespace->erase(triggerId);
-		m_values->erase(triggerId);
-	}
-	//cout << "trigger removed in controller" << endl;
-	
-}
-
-void
-DeviceManager::setNamespaceValue(std::string address, int value, std::map<std::string, std::string> optionalArguments)
-{
-	std::map<unsigned int, std::string>::iterator it = m_namespace->begin();
-	
-	int key = -1;
-	while(it != m_namespace->end()){
-		if(it->second == address){
-			key = it->first;
-		}
-		it++;
-	}
-	
-	if(key != -1){
-		m_values->find(key)->second = value;
-		m_boxColorArg[key] = optionalArguments["color"];
-		m_boxCommentArg[key] = optionalArguments["comment"];
-	} else {
-		std::cout << "DeviceManager::setNamespaceValue failed : Address doesn't exist"	<< std::endl;
-	}
-	
-	//send a message to Stantum device to active the update button flashing
-	if(value == TRIGGER_WAITED) {
-		deviceSendSetRequest((std::string)("StantumUpdating/update 1"));
-	}
-}
-
-void
-DeviceManager::resetTriggerPointStates(){
-	std::map<unsigned int, unsigned int>::iterator it = m_values->begin();
-	
-	while (it != m_values->end()) {
-		it->second = TRIGGER_READY;
-		it++;
-	}
-	
-	//send a message to Stantum device to reinit the display
-	deviceSendSetRequest((std::string)("StantumDisplay/update 1"));
-}
-
-void
-DeviceManager::askDeviceManagerNamespaceFor(std::string address, std::vector<std::string>* namespaceVectorToFill)
-{
-	namespaceVectorToFill->clear();
-	std::map<unsigned int, std::string>::iterator it = m_namespace->begin();
-	
-	while (it != m_namespace->end()) {
-		//cout << it->second << endl;
-		namespaceVectorToFill->push_back(it->second);
-		it++;
-	}
-}
-
-std::string
-DeviceManager::askDeviceManagerValueFor(std::string address, std::string attribute)
-{
-	std::map<unsigned int, std::string>::iterator it = m_namespace->begin();
-	//cout << "asking value for " << address << endl;
-	
-	int key = -1;
-	while (it != m_namespace->end()) {
-		if (it->second == address) {
-			key = it->first;
-		}
-		it++;
-	}
-	
-	if (key != -1) {
-		if (attribute == "value") {
-			std::ostringstream stringValue;
-			stringValue <<  m_values->find(key)->second;
-			return stringValue.str();
-		} 
-		else if (attribute == "comment") {
-			//			map<unsigned int, string>::iterator it = m_boxCommentArg.begin();
-			//			while (it != m_boxCommentArg.end()) {
-			//				cout << it->second << endl;
-			//				it++;
-			//			}
-			
-			if (m_boxCommentArg.find(key) != m_boxCommentArg.end())
-				return m_boxCommentArg.find(key)->second;
-			else
-				return "";
-		}
-	} else {
-		std::cout << "DeviceManager::askDeviceManagerValueFor failed : Address doesn't exist : " << address << std::endl;
-		return "ERROR";
-	}
-}
-*/
 
 

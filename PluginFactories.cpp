@@ -55,14 +55,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <windows.h>
 #else
 #include <dirent.h>
+#include <dlfcn.h>
 #endif
 
 typedef PluginFactory* (*OpCreation)();
+
 
 /****************************************/
 //PluginFactories
 
 #ifdef _WIN32
+
 void PluginFactories::loadPlugins(std::string path) {
 	std::string dllpath = path + "/*.dll";
 	int n = 0;
@@ -73,9 +76,8 @@ void PluginFactories::loadPlugins(std::string path) {
 	liste = FindFirstFile(dllpath.c_str(), &File);
 	do {
 		n++;
-		std::cout << "<FILE> " << path + "/" + File.cFileName << std::endl;
-		//printf("<FILE>\t%s\n", File.cFileName);
-		std::string tmp = path + "/" + File.cFileName;
+		//std::cout << "<FILE> " << path + "/" + File.cFileName << std::endl;
+		std::string tmp = path + "/" + (std::string)File.cFileName;
 
 		HINSTANCE lib = LoadLibrary(tmp.c_str());//charge le plugin
 

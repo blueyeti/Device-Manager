@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<deviceManager version='1.0'>
+  <receiveDevices>
+    <OSC ReceptionPort="7009" />
+    <Minuit ReceptionPort="7010" />
+  </receiveDevices>
+  <sendDevices>
+    <Minuit name="galamusPlayer" ip = "127.0.0.1" port = "7008" />
+    <Minuit name="programmeX" ip = "127.0.0.1" port = "7080" />
+    <OSC name="autreProgramme" ip = "127.0.0.1" port = "7009" />
+  </sendDevices>
+</deviceManager>

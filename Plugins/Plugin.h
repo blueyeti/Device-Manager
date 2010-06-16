@@ -56,7 +56,7 @@
 # ifdef WIN32_DLL
 # 	define WIN32_PLUGIN_API __declspec(dllexport)
 # else
-# 	define WIN32_PLUGIN_API __declspec(dllimport)
+# 	define WIN32_PLUGIN_API
 # endif
 
 #include "../DeviceManager.h"
@@ -67,7 +67,7 @@ public:
 
 	DeviceManager *m_controller;
 
-	std::vector<std::string> *m_commParameterNames;
+	std::map<std::string, std::string>* m_parameters;
 
 	void (*m_waitedMessageAction)(void*, std::string);
 	void *m_callBackMessageArgument;
@@ -105,20 +105,28 @@ public:
 	 ************************************************/
 
 	/*!
-	 * Define the device parameters needs by each device to communicate (like a destination port for example)
+	 * Define the plugins parameters with an optional map<name, value> 
+	 * Has to be called to instantiate the m_parameter map
 	 *
 	 */
-	virtual void commDefineParameters()=0;
+	virtual void commDefineParameters(std::map<std::string, std::string>* parameters = NULL)=0;
+
+	/*!
+	 * Set a plugin parameter (if does not exist add it)
+	 *
+	 * \param parameterName  : the name of the parameter you want to set the value
+	 * \param parameterValue : the value like a string
+	 */
+	virtual void commSetParameter(std::string parameterName, std::string parameterValue)=0;
 
 	/*!
 	 * Get a device parameter
 	 * All parameters names and values are defined by the plugin itself
-	 * This method doesn't have to be implemented by the plugin child if it doesn't need
 	 *
-	 * \param paramaterName : the name of the parameter you want the value
+	 * \param parameterName : the name of the parameter you want the value
 	 * \return the string value for this parameter name or "ERROR" if the name corresponds to any parameter
 	 */
-	virtual std::string commGetParameter(std::string paramaterName)=0;
+	virtual std::string commGetParameter(std::string parameterName)=0;
 
 	/*!
 	 * Run the message reception thread 

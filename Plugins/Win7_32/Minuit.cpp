@@ -95,6 +95,66 @@ public:
 	 ************************************************/
 	
 	/*!
+	 * Define the device parameters needs by each device to communicate
+	 *
+	 */
+	void commDefineParameters(std::map<std::string/*name*/, std::string/*value*/>* parameters)
+	{
+		m_parameters = new std::map<std::string, std::string>;
+
+		if (parameters != NULL) {
+			std::map<std::string, std::string>::iterator it = parameters->begin();
+			while (it != parameters->end()) {
+				m_parameters->insert(std::pair<std::string, std::string>(it->first, it->second)); 
+				it++;
+			}
+		}
+	}
+
+	/*!
+	 * Set a plugin parameter
+	 *
+	 * \param parameterName  : the name of the parameter you want to set the value
+	 * \param parameterValue : the value like a string
+	 */
+	void commSetParameter(std::string parameterName, std::string parameterValue)
+	{
+		std::cout << "SET Minuit " << parameterName << " : " << parameterValue << std::endl;
+		if (m_parameters != NULL) {
+			std::map<std::string, std::string>::iterator it = m_parameters->find(parameterName);
+
+			if (it != m_parameters->end()) {
+				it->second = parameterValue;
+			} else {
+				m_parameters->insert(std::pair<std::string, std::string>(parameterName, parameterValue));
+			}
+		}
+	}
+	
+	/*!
+	 * Get a device parameter like a reception port for example
+	 *
+	 * \param paramaterName : the name of the parameter you want the value
+	 * \return the string value for this parameter name or "ERROR" if the name corresponds to any parameter
+	 */
+	std::string commGetParameter(std::string parameterName)
+	{
+		if (m_parameters != NULL) {
+			std::map<std::string, std::string>::iterator it = m_parameters->find(parameterName);
+
+			if (it != m_parameters->end()) {
+				return it->second;
+			} else {
+				std::cout << "No Parameter named : " << parameterName << "for minuit plugin" << std::endl;
+				return "ERROR";
+			}
+		} else {
+			std::cout << "No defined parameters for minuit plugin" << std::endl;
+			return "ERROR";
+		}
+	}
+
+	/*!
 	 * Run the message reception thread 
 	 * Prepare the receive callback method to be passed to the DeviceManager to intercept the message
 	 *
@@ -102,7 +162,12 @@ public:
 	void commRunReceivingThread()
 	{
 		m_minuitMethods = new MinuitCommunicationMethods();
-		m_minuitMethods->minuitRunOSCListening(MINUIT_RECEPTION_PORT);
+
+		if (m_parameters != NULL && m_parameters->find("ReceptionPort") != m_parameters->end()) {
+			m_minuitMethods->minuitRunOSCListening(toInt(m_parameters->find("ReceptionPort")->second));
+		} else {
+			m_minuitMethods->minuitRunOSCListening(MINUIT_RECEPTION_PORT);
+		}
 		
 		m_minuitMethods->m_setRequestCallBackArgument = this;
 		m_minuitMethods->m_setRequestCallBack = &receiveSetRequestCallBack;
@@ -116,40 +181,6 @@ public:
 		m_minuitMethods->m_listenRequestCallBackArgument = this;
 		m_minuitMethods->m_listenRequestCallBack = &receiveListenRequestCallBack;
 	}
-	
-	/*!
-	 * Define the device parameters needs by each device to communicate
-	 *
-	 */
-	void commDefineParameters()
-	{
-		m_commParameterNames = new std::vector<std::string>;
-		m_commParameterNames->push_back("ip");
-		m_commParameterNames->push_back("port");
-		m_commParameterNames->push_back("pluginReceptionPort");
-	}
-	
-	/*!
-	 * Get a device parameter like a reception port for example
-	 * All parameters names and values are defined by the plugin itself
-	 * This method doesn't have to be implemented by the plugin child if it doesn't need
-	 *
-	 * \param paramaterName : the name of the parameter you want the value
-	 * \return the string value for this parameter name or "ERROR" if the name corresponds to any parameter
-	 */
-	std::string commGetParameter(std::string paramaterName)
-	{
-		if(paramaterName.compare("pluginReceptionPort")==0)
-		{
-			std::ostringstream oss;
-			oss << MINUIT_RECEPTION_PORT;
-			return oss.str();;
-		} else {
-			std::cout << "No Parameter named : " << paramaterName << "for minuit plugin" << std::endl;
-			return "ERROR";
-		}
-	}
-	
 	
 	
 	/************************************************
