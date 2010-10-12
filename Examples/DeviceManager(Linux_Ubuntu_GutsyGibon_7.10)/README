@@ -1,0 +1,21 @@
+This first step example shows how to use the DeviceManager to establish a communication between two apps.
+
+Each app loads plugins and declares a device corresponding to the other.
+A device is added by giving it a name, the plugin to use, and some parameters like ip and port for Minuit or OSC plugin.
+
+The ReceiveTestApp just waits messages. 
+The receiveCallback method is called when a message is received and can be used to process the message.
+
+The SendTestApp sends an OSC message to the ReceiveTestApp.
+
+Now plugin parameters as reception ports are configurable.
+You can call pluginSetCommParameter(...) method or pluginLoadConfigXml(...) if you want to use a xml config file (cf DeviceManager.h).
+
+Makefiles are available to compile test programs.
+If you want to use the Device Manager with your own app don't forget to add these option and libs (have a look Makefile compile command): 
+-lDeviceManager
+-ldl
+-lpthread 
+-rdynamic
+
+First launch the ReceiveTestApp then the SendTestApp.
