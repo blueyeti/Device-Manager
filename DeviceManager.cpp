@@ -52,7 +52,6 @@
 #include "PluginFactories.h"
 #include "Plugins/Plugin.h"
 #include "xmlParser.h"
-#include "Namespace.h"
 
 #include <iostream>
 #include <algorithm>
@@ -623,20 +622,6 @@ DeviceManager::deviceIsVisible(std::string deviceName)
  a set of methods used to manage the local namespace 
  note : each method of this set is prepend by 'namespace'
  *********************************************************/
-
-void 
-DeviceManager::namespaceInit()
-{
-	m_namespace = new Namespace();
-	m_namespace->namespaceInit(m_application_name);
-	m_namespace->namespaceRelease();
-}
-
-void 
-DeviceManager::namespaceLoadXml(std::string filename)
-{
-	m_namespace->namespaceLoadFromXml(filename);
-}
 
 std::string
 DeviceManager::namespaceApplicationName()

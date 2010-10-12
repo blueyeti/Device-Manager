@@ -80,7 +80,6 @@
 
 #define NAMESPACE_ATTR_LIFE "life"				//< used to observe the creation or the destruction of node below an address
 
-class Namespace;
 class Device;
 class Plugin;
 class PluginFactories;
@@ -105,9 +104,6 @@ private:
 	std::map<std::string, Device*> *netDevices;						//< a map between a device name and an instance of this Device
 	unsigned int deviceId;											//< the device id witch is incremented automatically
 
-	Namespace *m_namespace;
-
-	
 	void (*m_discover_callback)(void*, 
 								Address, 
 								std::vector<std::string>&,
@@ -373,9 +369,6 @@ public:
 	 a set of methods used to manage and deal with the local namespace 
 	 note : each method of this set is prepend by 'namespace'
 	 ************************************************/
-	
-	void namespaceInit();
-	void namespaceLoadXml(std::string filename);
 
 
 	/*!
