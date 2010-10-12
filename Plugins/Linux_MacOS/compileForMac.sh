@@ -1,4 +1,4 @@
-cd minuit
+cd Minuit
 gcc -c *.cpp
 cd ../NetworkCommunication/ip
 gcc -c *.cpp

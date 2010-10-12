@@ -198,11 +198,13 @@ public:
 		 * Add by Raphael MARCZAK
 		 * It is a little dirty but this is the only solution (Amymeric Vincent)
 		 */
+#if defined(__APPLE__)
 		int on = 1;
 		if (setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, (char*)&on, sizeof(on)) < 0)
 		{
 			throw std::runtime_error("unable to SO_REUSEPORT\n");
 		}
+#endif
 		/*
 		 * End
 		 */

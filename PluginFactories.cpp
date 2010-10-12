@@ -116,7 +116,7 @@ void PluginFactories::loadPlugins(std::string path)
 	while (n-- > 0) {
 		std::string tmp = path + "/" + namelist[n]->d_name;
 
-		if (tmp.rfind(".dylib") == std::string::npos) {//test sur le nom du fichier qui n'est pas pris en compte si != .dylib
+		if (tmp.rfind(".dylib") == std::string::npos && tmp.rfind(".so") == std::string::npos) {//test sur le nom du fichier qui n'est pas pris en compte si != .dylib ou .so
 			continue;
 		}
 
