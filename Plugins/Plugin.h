@@ -77,7 +77,7 @@ public:
 	 a set of methods used to handle Plugin.
 	 ************************************************/
 
-	//virtual ~Plugin()=0;
+	virtual ~Plugin() {};
 
 	/*!
 	 * A plugin need to know the DeviceManager to access it methods
