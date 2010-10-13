@@ -1,5 +1,8 @@
 The DeviceManager is a multi-platform library for managing communication protocols as plugins.
 
+To use it without compiling you can get the lib in /Examples/"your os"/Example/Lib directory according to your OS.
+The compiled plugins are available in /Examples/"your os"/Example/ReceiveTestApp/Plugins according to your OS too.
+
 You can compile it with the Makefile and include the libDeviceManager.a(LINUX/MacOS) or DeviceManager.lib(Windows) in your project.
 To compile it on a specific platform, you have to configure the first Makefile variable :
 	OS = WIN32, LINUX or MacOS
