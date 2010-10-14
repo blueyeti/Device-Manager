@@ -1,11 +1,30 @@
-#give your OS here, WIN32, MAC, or LINUX
-OS = MAC
+#give your OS on the command line :
+#make linux
+#make macos
+#make windows
+
+#OS by default :
+OS = LINUX
 
 ifeq ($(OS), WIN32)
 	GCC = cl.exe /c /EHsc
 else
 	GCC = g++ -c -Wall
 endif
+
+
+.PHONY: linux
+linux:
+        make all OS=LINUX
+ 
+.PHONY: windows
+windows:
+        make all OS=WIN32
+        
+.PHONY: mac
+mac:
+        make all OS=MAC
+
 
 
 all: libDeviceManager

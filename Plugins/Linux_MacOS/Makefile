@@ -1,7 +1,19 @@
-#give your OS here, MAC, or LINUX
+#give your OS on the command line :
+#make linux
+#make macos
+
+#OS by default :
 OS = LINUX
 
 GCC = g++
+
+.PHONY: linux
+linux:
+        make all OS=LINUX
+        
+.PHONY: mac
+mac:
+        make all OS=MAC
 
 all: 
 ifeq ($(OS), MAC)

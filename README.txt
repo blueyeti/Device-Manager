@@ -4,8 +4,11 @@ To use it without compiling you can get the lib in /Examples/"your os"/Example/L
 The compiled plugins are available in /Examples/"your os"/Example/ReceiveTestApp/Plugins according to your OS too.
 
 You can compile it with the Makefile and include the libDeviceManager.a(LINUX/MacOS) or DeviceManager.lib(Windows) in your project.
-To compile it on a specific platform, you have to configure the first Makefile variable :
-	OS = WIN32, LINUX or MacOS
+To compile it on a specific platform, you have to execute one (by default platform is linux):
+	make linux
+	make mac
+	make windows
+	
 The DeviceManager header contains all the methods you should call to use the DeviceManager. 
 A Doxygen describes these methods.
 
