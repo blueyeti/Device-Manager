@@ -9,11 +9,11 @@ GCC = g++
 
 .PHONY: linux
 linux:
-        make all OS=LINUX
+	make all OS=LINUX
         
 .PHONY: mac
 mac:
-        make all OS=MAC
+	make all OS=MAC
 
 all: 
 ifeq ($(OS), MAC)

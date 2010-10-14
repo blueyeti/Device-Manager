@@ -1,6 +1,6 @@
 #give your OS on the command line :
 #make linux
-#make macos
+#make mac
 #make windows
 
 #OS by default :
@@ -12,19 +12,17 @@ else
 	GCC = g++ -c -Wall
 endif
 
-
 .PHONY: linux
 linux:
-        make all OS=LINUX
+	make all OS=LINUX
  
 .PHONY: windows
 windows:
-        make all OS=WIN32
+	make all OS=WIN32
         
 .PHONY: mac
 mac:
-        make all OS=MAC
-
+	make all OS=MAC
 
 
 all: libDeviceManager
@@ -57,8 +55,4 @@ DeviceManager.obj: DeviceManager.cpp DeviceManager.h
 
 
 clean:
-ifeq ($(OS), WIN32) 
-	rm -f *~ *.obj DeviceManager.lib
-else
-	rm -f *~ *.o libDeviceManager.a
-endif
+	rm -f *~ *.o libDeviceManager.a *.obj DeviceManager.lib
