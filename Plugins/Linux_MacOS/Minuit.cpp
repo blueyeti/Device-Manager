@@ -254,12 +254,14 @@ public:
 		stringToSend += " ";
 		stringToSend += address;
 		
+		// Wait for an answer from an IP on a specific port
+		std::cout << "------------ Minuit : addDiscoverAnswer ------------- " << std::endl;
+		m_minuitMethods->minuitAddDiscoverAnswer(name, address, ip, toInt(port), DEFAULT_TIMEOUT);
+		
 		// send request
 		std::cout << "Minuit : deviceSendDiscoverRequest : " << stringToSend << std::endl;
 		m_minuitMethods->minuitSendMessage(stringToSend, ip, toInt(port));
 		
-		// Wait for an answer from an IP on a specific port
-		m_minuitMethods->minuitAddDiscoverAnswer(name, address, ip, toInt(port), DEFAULT_TIMEOUT);
 		
 		state = ANSWER_RECEIVED;
 		do
