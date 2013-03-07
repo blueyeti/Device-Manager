@@ -255,7 +255,6 @@ public:
 		stringToSend += address;
 		
 		// Wait for an answer from an IP on a specific port
-		std::cout << "------------ Minuit : addDiscoverAnswer ------------- " << std::endl;
 		m_minuitMethods->minuitAddDiscoverAnswer(name, address, ip, toInt(port), DEFAULT_TIMEOUT);
 		
 		// send request
