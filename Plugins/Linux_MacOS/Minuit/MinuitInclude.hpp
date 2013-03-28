@@ -2,6 +2,7 @@
 #define MINUITINCLUDE_HPP_
 
 #include <sys/time.h>
+#include <unistd.h> 
 
 #define MINUIT_REQUEST_DISCOVER "?namespace"
 #define MINUIT_REQUEST_GET "?get"
