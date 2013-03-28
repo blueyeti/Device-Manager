@@ -9,7 +9,7 @@ OS = LINUX
 ifeq ($(OS), WIN32)
 	GCC = cl.exe /c /EHsc
 else
-	GCC = g++ -c -Wall
+	GCC = g++ -c -Wall -m64
 endif
 
 .PHONY: linux
